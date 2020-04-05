@@ -586,7 +586,7 @@ def load_preprocessed_data(save_dir=cst.PROCESSED_DATA):
 
 
 def main():
-    batch_dict = load_batches_to_dict(amount_to_load=3)    
+    batch_dict = load_batches_to_dict()    
 
     results, cycles_drop_info = preprocess_batch(batch_dict,
                                                  return_original_data=False,
