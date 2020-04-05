@@ -35,7 +35,7 @@ long-live-the-battery
 ```
 2. Make sure *data* is empty otherwise. Then from the base directory run
 ```
-python -m trainer.data_preprocessing
+python -m preprocessing.data_preprocessing
 ```
 to create a *processed_data.pkl* file.
 
