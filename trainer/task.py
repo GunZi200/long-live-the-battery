@@ -1,6 +1,6 @@
 import argparse
 import datetime
-import os
+from os.path import join
 
 import tensorflow as tf
 from absl import logging
@@ -208,7 +208,7 @@ def calculate_steps_per_epoch(data_dir, dataset_config):
 def get_tboard_dir():
     run_timestr = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     if args.tboard_dir is None:
-        tboard_dir = os.path.join(cst.TENSORBOARD_DIR, "jobs", run_timestr)
+        tboard_dir = join(cst.TENSORBOARD_DIR, "jobs", run_timestr)
     else:
         tboard_dir = args.tboard_dir
     return tboard_dir
