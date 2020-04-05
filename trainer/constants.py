@@ -28,8 +28,6 @@ BIG_TRAIN_SET = join(DATASETS_DIR, 'train_big', '*tfrecord')  	 # regexp for the
 SCALING_FACTORS_DIR = join(DATASETS_DIR, 'scaling_factors.csv')  # location for scaling factors for tfrecords files
 DATA_DIR = 'data'
 
-BUCKET_NAME = 'ion_age_bucket'
-
 # Hyperparameter names
 CONV_KERNEL = 'conv_kernel'
 CONV_FILTERS = 'conv_filters'

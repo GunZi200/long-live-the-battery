@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
-import pickle
-from os.path import join
+from os.path import join, dirname
+from pathlib import Path
+import joblib
 
-# TODO consolidate constants & filepaths throughout codebase
-DATA_DIR = join("data")
+DATA_DIR = join(Path(__file__).parents[1], 'data')
 
 def load_batches_to_dict(amount_to_load=3):
     """Loads batches from disc and returns one concatenated dict.
@@ -16,8 +16,9 @@ def load_batches_to_dict(amount_to_load=3):
 
     # Replicating Load Data logic
     print("Loading batch1 ...")
+    
     path1 = join(DATA_DIR, "batch1.pkl")
-    batch1 = pickle.load(open(path1, 'rb'))
+    batch1 = joblib.load(open(path1, 'rb'))
 
     #remove batteries that do not reach 80% capacity
     del batch1['b1c8']
@@ -31,7 +32,7 @@ def load_batches_to_dict(amount_to_load=3):
     if amount_to_load > 1:
         print("Loading batch2 ...")
         path2 = join(DATA_DIR, "batch2.pkl")
-        batch2 = pickle.load(open(path2, 'rb'))
+        batch2 = joblib.load(open(path2, 'rb'))
 
         # There are four cells from batch1 that carried into batch2, we'll remove the data from batch2
         # and put it with the correct cell from batch1
@@ -63,7 +64,7 @@ def load_batches_to_dict(amount_to_load=3):
     if amount_to_load > 2:
         print("Loading batch3 ...")
         path3 = join(DATA_DIR, "batch3.pkl")
-        batch3 = pickle.load(open(path3, 'rb'))
+        batch3 = joblib.load(open(path3, 'rb'))
 
         # remove noisy channels from batch3
         del batch3['b3c37']

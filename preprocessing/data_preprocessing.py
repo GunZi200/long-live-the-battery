@@ -6,9 +6,8 @@ import numpy as np
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
 
-from trainer.rebuilding_features import load_batches_to_dict
-import trainer.constants as cst
-
+from preprocessing.rebuilding_features import load_batches_to_dict
+import preprocessing.constants as cst
 
 class DropCycleException(Exception):
     """Used for dropping whole cycles without additional information."""

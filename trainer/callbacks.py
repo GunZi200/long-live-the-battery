@@ -1,5 +1,4 @@
 import tensorflow as tf
-from google.cloud import storage
 import numpy as np
 import trainer.evaluation as ev
 import os
@@ -46,10 +45,6 @@ class CustomCheckpoints(tf.keras.callbacks.Callback):
         self.save_last_only = save_last_only
         self.save_eval_plot = save_eval_plot
         self.period = period
-        self.cloud_run = cst.BUCKET_NAME in log_dir
-        if self.cloud_run:
-            self.client = storage.Client()
-            self.bucket = self.client.get_bucket(cst.BUCKET_NAME)  # Only used for saving evaluation plots
         if self.save_eval_plot:
             self.validation_dataset = dp.create_dataset(data_dir=dataset_path,
                                                         window_size=dataset_config["window_size"],

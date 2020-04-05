@@ -1,12 +1,12 @@
 import csv
 import pickle
 import os
-
 import tensorflow as tf
-from tensorflow.train import FloatList, Feature, Features, Example
-
+FloatList = tf.train.FloatList
+Feature = tf.train.Feature
+Features = tf.train.Features
+Example = tf.train.Example
 import trainer.constants as cst
-
 
 def get_cycle_example(cell_value, summary_idx, cycle_idx, scaling_factors):
     """
