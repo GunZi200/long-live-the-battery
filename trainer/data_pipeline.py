@@ -1,5 +1,5 @@
 import csv
-import pickle
+import joblib
 import os
 import tensorflow as tf
 FloatList = tf.train.FloatList
@@ -279,12 +279,12 @@ def load_train_test_split():
     recreating the splits from the original paper.
     This can be passed directly to "write_to_tfrecords()" as an argument.
     """
-    return pickle.load(open(cst.TRAIN_TEST_SPLIT, "rb"))
+    return joblib.load(open(cst.TRAIN_TEST_SPLIT, "rb"))
 
 
 # dev method
 def load_processed_battery_data():
-    return pickle.load(open(cst.PROCESSED_DATA, "rb"))
+    return joblib.load(open(cst.PROCESSED_DATA, "rb"))
 
 
 if __name__ == "__main__":
