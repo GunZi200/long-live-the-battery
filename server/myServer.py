@@ -8,19 +8,24 @@ import plotly
 import plotly.graph_objs as go
 import tensorflow as tf
 from flask import Flask, render_template, request
-#from server.plot import plot_single_prediction
-#from server.constants import NUM_SAMPLES, MODEL_DIR, SAMPLES_DIR
-#from server.clippy import Clippy, clipped_relu
 from server.plot import plot_single_prediction
 import server.constants as cst
 import server.clippy as clippy
+from trainer.custom_metrics_losses import mae_current_cycle, mae_remaining_cycles
 
 app = Flask(__name__)
 
 
 def load_model():
     global model  # bc YOLO
-    model = tf.keras.models.load_model(cst.MODEL_DIR, custom_objects={'clippy': clippy.Clippy(clippy.clipped_relu)})
+    
+    dependencies = {
+        'clippy': clippy.Clippy(clippy.clipped_relu),
+        'mae_current_cycle': mae_current_cycle,
+        'mae_remaining_cycles': mae_remaining_cycles
+    }
+
+    model = tf.keras.models.load_model(cst.MODEL_DIR, custom_objects=dependencies)
 
 
 def make_prediction(cycle_data, response):
