@@ -96,7 +96,7 @@ def get_args():
     )
     parser.add_argument(
         '--model',
-        default='split_model',
+        default='full_cnn_model',
         type=str,
         help='The type of model to use, default="split_model", options="split_model", "full_cnn_model"'
     )
