@@ -27,6 +27,9 @@ SECONDARY_TEST_SET = join(DATASETS_DIR, 'secondary_test', '*tfrecord')  # regexp
 BIG_TRAIN_SET = join(DATASETS_DIR, 'train_big', '*tfrecord')  	 # regexp for the combined training set (train + 1st test sets)
 SCALING_FACTORS_DIR = join(DATASETS_DIR, 'scaling_factors.csv')  # location for scaling factors for tfrecords files
 DATA_DIR = 'data'
+MODEL_DIR = "trainer/saved_model"
+RESULTS_DIR = join('data','tfrecords')
+SAMPLES_DIR = join('static','samples')
 
 # Hyperparameter names
 CONV_KERNEL = 'conv_kernel'
@@ -41,6 +44,14 @@ OUTPUT_ACTIVATION = 'output_activation'
 LEARNING_RATE = 'learning_rate'
 DROPOUT_RATE_CNN = 'dropout_cnn'
 DROPOUT_RATE_LSTM = 'dropout_lstm'
+
+# Loading data parameters
+WINDOW_SIZE = 20
+BATCH_SIZE = 32
+NUM_EPOCHS = 3
+SHIFT = 5
+STRIDE = 1
+NUM_SAMPLES = 6
 
 # unique full_cnn_model parameters
 CONV_KERNEL_2D = 'conv_kernel_2d'
