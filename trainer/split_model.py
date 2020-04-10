@@ -44,14 +44,14 @@ def create_keras_model(window_size, loss, hparams_config=None):
         hparams.update(hparams_config)
 
     # define Inputs
-    qdlin_in = Input(shape=(window_size, cst.STEPS, cst.INPUT_DIM), name=cst.QDLIN_NAME)
-    tdlin_in = Input(shape=(window_size, cst.STEPS, cst.INPUT_DIM), name=cst.TDLIN_NAME)
-    ir_in = Input(shape=(window_size, cst.INPUT_DIM), name=cst.INTERNAL_RESISTANCE_NAME)
-    dt_in = Input(shape=(window_size, cst.INPUT_DIM), name=cst.DISCHARGE_TIME_NAME)
-    qd_in = Input(shape=(window_size, cst.INPUT_DIM), name=cst.QD_NAME)
+    qdlin_in = Input(shape=(window_size, cst.STEPS, cst.INPUT_DIM), name=cst.QDLIN_NAME) # Shape: 20x1000x1
+    tdlin_in = Input(shape=(window_size, cst.STEPS, cst.INPUT_DIM), name=cst.TDLIN_NAME) # Shape: 20x1000x1
+    ir_in = Input(shape=(window_size, cst.INPUT_DIM), name=cst.INTERNAL_RESISTANCE_NAME) # Shape: 20x1
+    dt_in = Input(shape=(window_size, cst.INPUT_DIM), name=cst.DISCHARGE_TIME_NAME)      # Shape: 20x1
+    qd_in = Input(shape=(window_size, cst.INPUT_DIM), name=cst.QD_NAME)                  # Shape: 20x1
     
     # combine all data from detail level
-    detail_concat = concatenate([qdlin_in, tdlin_in], axis=3, name='detail_concat')
+    detail_concat = concatenate([qdlin_in, tdlin_in], axis=3, name='detail_concat') # Shape: 20x1000x2
 
     # define CNN
     cnn_out = TimeDistributed(Conv1D(filters=hparams[cst.CONV_FILTERS],
@@ -77,7 +77,7 @@ def create_keras_model(window_size, loss, hparams_config=None):
     drop_out = TimeDistributed(Dropout(rate=hparams[cst.DROPOUT_RATE_CNN]), name='dropout_cnn')(cnn_flat)
 
     # combine CNN output with all data from summary level
-    all_concat = concatenate([drop_out, ir_in, dt_in, qd_in], axis=2, name='all_concat')
+    all_concat = concatenate([drop_out, ir_in, dt_in, qd_in], axis=2, name='all_concat') #Shape: 20x4
 
     # define LSTM
     lstm_out = LSTM(hparams[cst.LSTM_NUM_UNITS], activation=hparams[cst.LSTM_ACTIVATION], name='recurrent')(all_concat)
