@@ -14,7 +14,7 @@ import server.clippy as clippy
 from trainer.custom_metrics_losses import mae_current_cycle, mae_remaining_cycles
 
 app = Flask(__name__)
-
+print(f"TF version: {tf.__version__}")
 
 def load_model():
     global model  # bc YOLO

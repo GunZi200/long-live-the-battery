@@ -45,26 +45,26 @@ def get_args():
     parser.add_argument(
         '--num-epochs',
         type=int,
-        default=3,
+        default=cst.NUM_EPOCHS,
         help='number of times to go through the data, default=3')
     parser.add_argument(
         '--batch-size',
-        default=32,
+        default=cst.BATCH_SIZE,
         type=int,
         help='number of records to read during each training step, default=16')
     parser.add_argument(
         '--window-size',
-        default=20,
+        default=cst.WINDOW_SIZE,
         type=int,
         help='window size for sliding window in training sample generation, default=100')
     parser.add_argument(
         '--shift',
-        default=5,
+        default=cst.SHIFT,
         type=int,
         help='shift for sliding window in training sample generation, default=20')
     parser.add_argument(
         '--stride',
-        default=1,
+        default=cst.STRIDE,
         type=int,
         help='stride inside sliding window in training sample generation, default=1')
     parser.add_argument(

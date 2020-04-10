@@ -14,10 +14,9 @@ def get_predictions_results(model, dataset, scaling_factors_dict):
     predictions = []
     targets = []
     
-    for i, (example, target) in enumerate(dataset):
+    for example, target in dataset.as_numpy_iterator():
         predictions.extend(model.predict(example).tolist())
-        targets.extend(target.numpy().tolist())
-    
+        targets.extend(target.tolist())
     if scaling_factors_dict:
         # Scale to original range and round for floating point errors of conversion.
         predictions = np.round(np.array(predictions) * scaling_factors_dict[cst.REMAINING_CYCLES_NAME]).astype(np.int)
