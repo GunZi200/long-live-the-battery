@@ -3,7 +3,13 @@ import datetime
 from os.path import join
 
 import tensorflow as tf
+try:
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(gpus[0], True)
+except: 
+    print("Error in task.py. Could not set memory growth for GPU.")
 from absl import logging
+
 
 import trainer.constants as cst
 import trainer.data_pipeline as dp
@@ -14,7 +20,6 @@ from trainer.callbacks import CustomCheckpoints
 
 def get_args():
     """Argument parser.
-
     Returns:
         Dictionary of arguments.
     """
@@ -96,7 +101,7 @@ def get_args():
     )
     parser.add_argument(
         '--model',
-        default='split_model',
+        default='full_cnn_model',
         type=str,
         help='The type of model to use, default="split_model", options="split_model", "full_cnn_model"'
     )
@@ -106,11 +111,9 @@ def get_args():
 
 def train_and_evaluate(args, tboard_dir, hparams=None):
     """Trains and evaluates the Keras model.
-
     Uses the Keras model defined in model.py and trains on data loaded and
     preprocessed in data_pipeline.py. Saves the trained model in TensorFlow SavedModel
     format to the path defined in part by the --job-dir argument.
-
     Args:
     args: dictionary of arguments - see get_args() for details
     """
