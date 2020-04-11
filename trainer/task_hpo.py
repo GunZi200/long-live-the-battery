@@ -3,11 +3,16 @@ from os.path import join
 import datetime
 
 import tensorflow as tf
+try:
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(gpus[0], True)
+except: 
+    print("Error in task.py. Could not set memory growth for GPU.")
 from tensorboard.plugins.hparams import api as hp
 
 import trainer.constants as cst
 import trainer.task as task
-from trainer.hp_config import split_model_hparams
+from trainer.hp_config import split_model_hparams, full_cnn_model_hparams
 
 
 
@@ -33,7 +38,7 @@ def grid_search(args):
         tboard_dir = join(args.tboard_dir + "_gridsearch")
         
     # to pick parameters that are iterated over, edit hp_config.py
-    hyperparameters = split_model_hparams
+    hyperparameters = full_cnn_model_hparams
     
     session_num = 0
     for hparams in get_hyperparameter_grid(hyperparameters):

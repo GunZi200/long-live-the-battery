@@ -11,15 +11,31 @@ Only hp.Discrete() works with hpo gridsearch,
 avoid hp.RealInterval and hp.IntInterval.
 """
 
-split_model_hparams = [
-   hp.HParam(cst.CONV_KERNEL, hp.Discrete([9, 27])),
+# Hérna stillir maður hvaða parametra maður vill leita af og bera saman í Hparams.
+
+full_cnn_model_hparams = [
    hp.HParam(cst.CONV_FILTERS, hp.Discrete([8, 32])),
-   hp.HParam(cst.LSTM_NUM_UNITS, hp.Discrete([64, 128])),
-   # hp.HParam(cst.DENSE_NUM_UNITS, hp.Discrete([32])),
-   # hp.HParam(cst.OUTPUT_ACTIVATION, hp.Discrete(['relu', 'sigmoid'])),
-   # hp.HParam(cst.LEARNING_RATE, hp.Discrete([0.0001, 0.00001, 0.000005])),
-   # hp.HParam(cst.DROPOUT_RATE_CNN, hp.Discrete([0.3, 0.4])),
+   hp.HParam(cst.CONV_KERNEL, hp.Discrete([9, 27])),
+   hp.HParam(cst.CONV_KERNEL_2D, hp.Discrete([3, 9])),
+   hp.HParam(cst.CONV_STRIDE, hp.Discrete([1])),
+   hp.HParam(cst.CONV_STRIDE_2D, hp.Discrete([1, 3])),
+   hp.HParam(cst.CONV_ACTIVATION, hp.Discrete(['relu'])),
+   hp.HParam(cst.DENSE_NUM_UNITS, hp.Discrete([32])),
+   hp.HParam(cst.DENSE_ACTIVATION, hp.Discrete(['relu'])),
+   hp.HParam(cst.LEARNING_RATE, hp.Discrete([0.0001, 0.00001, 0.000005])),
+   hp.HParam(cst.DROPOUT_RATE_CNN, hp.Discrete([0.2, 0.3, 0.4]))
+   ]
+
+
+split_model_hparams = [
+   #hp.HParam(cst.CONV_KERNEL, hp.Discrete([9, 27])),
+   #hp.HParam(cst.CONV_FILTERS, hp.Discrete([8, 32])),
+   #hp.HParam(cst.LSTM_NUM_UNITS, hp.Discrete([64, 128])),
+   hp.HParam(cst.DENSE_NUM_UNITS, hp.Discrete([32])),
+   hp.HParam(cst.OUTPUT_ACTIVATION, hp.Discrete(['relu', 'sigmoid'])),
+   hp.HParam(cst.LEARNING_RATE, hp.Discrete([0.0001, 0.00001, 0.000005])),
+   hp.HParam(cst.DROPOUT_RATE_CNN, hp.Discrete([0.2, 0.3, 0.4])),
    # hp.HParam(cst.DROPOUT_RATE_LSTM, hp.Discrete([0.3, 0.4])),
-   # hp.HParam(cst.CONV_KERNEL_2D, hp.Discrete([(3, 9)])),
-   # hp.HParam(cst.CONV_STRIDE_2D, hp.Discrete([(1, 3)])),
+   hp.HParam(cst.CONV_KERNEL_2D, hp.Discrete([3, 9])),
+   hp.HParam(cst.CONV_STRIDE_2D, hp.Discrete([1, 3])),
    ]
