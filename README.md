@@ -70,6 +70,13 @@ To view the results with Tensorboard, run this command:
 tensorboard --logdir Graph
 ```
 
+To tune the model with Hparams run: 
+
+```
+python -m trainer.task_hpo
+```
+Then to view the data open Tensorboard and open the tab called Hparam.
+
 ## Predict
 
 Every training run saves a TensorBoard logfile and at least one model checkpoint by default in the *Graph* directory. One way to test your model's performance without writing your own [TensorFlow Keras code](https://www.tensorflow.org/beta/guide/keras/training_and_evaluation) is to start a local Flask server that serves predictions:
