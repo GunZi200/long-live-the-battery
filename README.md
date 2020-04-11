@@ -64,6 +64,12 @@ python -m trainer.task
 ```
 The default is set to three epochs which is okay for testing, but too short to train a reasonably fit model. Use the above command with the *--num-epochs* flag to set a higher number. To get a list of other parameters, use the *--help* flag.
 
+To view the results with Tensorboard, run this command:
+
+```
+tensorboard --logdir Graph
+```
+
 ## Predict
 
 Every training run saves a TensorBoard logfile and at least one model checkpoint by default in the *Graph* directory. One way to test your model's performance without writing your own [TensorFlow Keras code](https://www.tensorflow.org/beta/guide/keras/training_and_evaluation) is to start a local Flask server that serves predictions:
