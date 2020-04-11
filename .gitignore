@@ -24,5 +24,8 @@ env/
 # saved model on server
 server/saved_model/
 
+# saved model on trainer
+trainer/saved_model/
+
 # ignore sample data files for now
 *.json
