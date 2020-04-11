@@ -3,7 +3,13 @@ import datetime
 from os.path import join
 
 import tensorflow as tf
+try:
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(gpus[0], True)
+except: 
+    print("Error in task.py. Could not set memory growth for GPU.")
 from absl import logging
+
 
 import trainer.constants as cst
 import trainer.data_pipeline as dp
