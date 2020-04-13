@@ -27,15 +27,26 @@ def create_keras_model(window_size, loss, hparams_config=None):
     # Default configuration
     hparams = {
         cst.CONV_FILTERS: 32,
-        cst.CONV_KERNEL: 3,
+        cst.CONV_KERNEL: 9,
         cst.CONV_KERNEL_2D: (3, 9),
-        cst.CONV_STRIDE: 1,
+        cst.CONV_KERNEL_2D_X_1: 1,
+        cst.CONV_KERNEL_2D_Y_1: 9,
+        cst.CONV_KERNEL_2D_X_2: 1,
+        cst.CONV_KERNEL_2D_Y_2: 3,
+        cst.CONV_KERNEL_2D_X_3: 1,
+        cst.CONV_KERNEL_2D_Y_3: 3,
+        cst.CONV_STRIDE: 3,
         cst.CONV_STRIDE_2D: (1, 3),
+        cst.CONV_STRIDE_2D_X: 1,
+        cst.CONV_STRIDE_2D_Y: 3,
         cst.CONV_ACTIVATION: "relu",
         cst.DENSE_NUM_UNITS: 32,
+        cst.DENSE_NUM_UNITS_1: 512,
+        cst.DENSE_NUM_UNITS_2: 64,
         cst.DENSE_ACTIVATION: "relu",
         cst.LEARNING_RATE: 0.0001,
         cst.DROPOUT_RATE_CNN: 0.3,
+        cst.PADDING: 'valid'
     }
     # update hyperparameters with arguments from task_hyperparameter.py
     if hparams_config:
@@ -51,26 +62,26 @@ def create_keras_model(window_size, loss, hparams_config=None):
     # ------ CNN PART FOR DETAIL FEATURES ------
     # concat_detail = concatenate([qdlin_in, tdlin_in], axis=3)
     cnn_detail = Conv2D(filters=hparams[cst.CONV_FILTERS],
-                        kernel_size=hparams[cst.CONV_KERNEL_2D],
-                        strides=hparams[cst.CONV_STRIDE_2D],
+                        kernel_size=(hparams[cst.CONV_KERNEL_2D_X_1],hparams[cst.CONV_KERNEL_2D_Y_1]),
+                        strides=(hparams[cst.CONV_STRIDE_2D_X],hparams[cst.CONV_STRIDE_2D_Y]),
                         activation=hparams[cst.CONV_ACTIVATION],
-                        padding='same',
+                        padding=hparams[cst.PADDING],
                         name='cnn_detail')(qdlin_in)
     maxpool_detail = MaxPool2D(pool_size=(1, 2), name='maxpool_detail')(cnn_detail)
 
     cnn_detail2 = Conv2D(filters=hparams[cst.CONV_FILTERS] * 2,
-                         kernel_size=hparams[cst.CONV_KERNEL_2D],
-                         strides=hparams[cst.CONV_STRIDE_2D],
+                         kernel_size=(hparams[cst.CONV_KERNEL_2D_X_2],hparams[cst.CONV_KERNEL_2D_Y_2]),
+                         strides=(hparams[cst.CONV_STRIDE_2D_X],hparams[cst.CONV_STRIDE_2D_Y]),
                          activation=hparams[cst.CONV_ACTIVATION],
-                         padding='same',
+                         padding=hparams[cst.PADDING],
                          name='cnn_detail2')(maxpool_detail)
     maxpool_detail2 = MaxPool2D(pool_size=(1, 2), name='maxpool_detail2')(cnn_detail2)
 
     cnn_detail3 = Conv2D(filters=hparams[cst.CONV_FILTERS] * 4,
-                         kernel_size=hparams[cst.CONV_KERNEL_2D],
-                         strides=hparams[cst.CONV_STRIDE_2D],
+                         kernel_size=(hparams[cst.CONV_KERNEL_2D_X_3],hparams[cst.CONV_KERNEL_2D_Y_3]),
+                         strides=(hparams[cst.CONV_STRIDE_2D_X],hparams[cst.CONV_STRIDE_2D_Y]),
                          activation=hparams[cst.CONV_ACTIVATION],
-                         padding='same',
+                         padding=hparams[cst.PADDING],
                          name='cnn_detail3')(maxpool_detail2)
     maxpool_detail3 = MaxPool2D(pool_size=(2, 2), name='maxpool_detail3')(cnn_detail3)
     
@@ -98,19 +109,19 @@ def create_keras_model(window_size, loss, hparams_config=None):
     
     concat_all = concatenate([dropout_detail, dropout_scalar], axis=1, name="concat_all")
     
-    # hidden_dense = Dense(128,
-    #                      activation=hparams[cst.DENSE_ACTIVATION],
-    #                      name='hidden_dense',)(concat_all)
-    hidden_dense2 = Dense(hparams[cst.DENSE_NUM_UNITS],
+    hidden_dense = Dense(hparams[cst.DENSE_NUM_UNITS_1],
                           activation=hparams[cst.DENSE_ACTIVATION],
-                          name='hidden_dense2',)(concat_all)
-    dropout_output = Dropout(rate=0.4, name='dropout_output')(hidden_dense2)
+                          name='hidden_dense',)(concat_all)
+    hidden_dense2 = Dense(hparams[cst.DENSE_NUM_UNITS_2],
+                          activation=hparams[cst.DENSE_ACTIVATION],
+                          name='hidden_dense2',)(hidden_dense)
+    dropout_output = Dropout(rate=hparams[cst.DROPOUT_RATE_CNN], name='dropout_output')(hidden_dense2)
     
     # update keras context with custom activation object
     get_custom_objects().update({'clippy': Clippy(clipped_relu)})
     
     main_output = Dense(2, name='output', activation='clippy')(dropout_output)
-
+    #main_output = Dense(2, name='output', activation='clippy')(hidden_dense2)
     # # Splitting neurons into two parts for the two outputs
     # split_cc, split_rc = tf.split(hidden_dense2, num_or_size_splits=2, axis=-1)
     # cc_output = Dense(1, name='cc_output', activation='clippy')(split_cc)

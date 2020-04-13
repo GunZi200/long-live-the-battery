@@ -15,15 +15,26 @@ avoid hp.RealInterval and hp.IntInterval.
 
 full_cnn_model_hparams = [
    hp.HParam(cst.CONV_FILTERS, hp.Discrete([8, 32])),
-   hp.HParam(cst.CONV_KERNEL, hp.Discrete([9, 27])),
-   hp.HParam(cst.CONV_KERNEL_2D, hp.Discrete([3, 9])),
+   hp.HParam(cst.CONV_KERNEL, hp.Discrete([9])),
+   hp.HParam(cst.CONV_KERNEL_2D, hp.Discrete([3])),
+   hp.HParam(cst.CONV_KERNEL_2D_X_1, hp.Discrete([1])),
+   hp.HParam(cst.CONV_KERNEL_2D_Y_1, hp.Discrete([3, 9])),
+   hp.HParam(cst.CONV_KERNEL_2D_X_2, hp.Discrete([1])),
+   hp.HParam(cst.CONV_KERNEL_2D_Y_2, hp.Discrete([3, 9])),
+   hp.HParam(cst.CONV_KERNEL_2D_X_3, hp.Discrete([1])),
+   hp.HParam(cst.CONV_KERNEL_2D_Y_3, hp.Discrete([3,9])),
+   hp.HParam(cst.PADDING, hp.Discrete(['same', 'valid'])),
    hp.HParam(cst.CONV_STRIDE, hp.Discrete([1])),
-   hp.HParam(cst.CONV_STRIDE_2D, hp.Discrete([1, 3])),
+   hp.HParam(cst.CONV_STRIDE_2D, hp.Discrete([1])),
+   hp.HParam(cst.CONV_STRIDE_2D_X, hp.Discrete([1])),
+   hp.HParam(cst.CONV_STRIDE_2D_Y, hp.Discrete([3])),
    hp.HParam(cst.CONV_ACTIVATION, hp.Discrete(['relu'])),
    hp.HParam(cst.DENSE_NUM_UNITS, hp.Discrete([32])),
+   hp.HParam(cst.DENSE_NUM_UNITS_1, hp.Discrete([64])),
+   hp.HParam(cst.DENSE_NUM_UNITS_2, hp.Discrete([256])),
    hp.HParam(cst.DENSE_ACTIVATION, hp.Discrete(['relu'])),
-   hp.HParam(cst.LEARNING_RATE, hp.Discrete([0.0001, 0.00001, 0.000005])),
-   hp.HParam(cst.DROPOUT_RATE_CNN, hp.Discrete([0.2, 0.3, 0.4]))
+   hp.HParam(cst.LEARNING_RATE, hp.Discrete([0.0001, 0.00001])),
+   hp.HParam(cst.DROPOUT_RATE_CNN, hp.Discrete([0.3, 0.4])),
    ]
 
 
