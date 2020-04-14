@@ -28,7 +28,7 @@ def get_cycle_example(cell_value, summary_idx, cycle_idx, scaling_factors):
     
     # Detail feature values (arrays)
     qdlin_value = cell_value["cycles"][cycle_idx][cst.QDLIN_NAME] / scaling_factors[cst.QDLIN_NAME]
-    tdlin_value = cell_value["cycles"][cycle_idx][cst.TDLIN_NAME] / scaling_factors[cst.TDLIN_NAME]
+    #tdlin_value = cell_value["cycles"][cycle_idx][cst.TDLIN_NAME] / scaling_factors[cst.TDLIN_NAME]
     
     # Wrapping as example
     cycle_example = Example(
@@ -44,8 +44,8 @@ def get_cycle_example(cell_value, summary_idx, cycle_idx, scaling_factors):
                     Feature(float_list=FloatList(value=dt_value)),
                 cst.QDLIN_NAME:
                     Feature(float_list=FloatList(value=qdlin_value)),
-                cst.TDLIN_NAME:
-                    Feature(float_list=FloatList(value=tdlin_value)),
+                #cst.TDLIN_NAME:
+                    #Feature(float_list=FloatList(value=tdlin_value)),
                 cst.CURRENT_CYCLE_NAME:
                     Feature(float_list=FloatList(value=cc_value))
             }
@@ -122,7 +122,7 @@ def parse_features(example_proto):
         cst.DISCHARGE_TIME_NAME: tf.io.FixedLenFeature([1, ], tf.float32),
         cst.REMAINING_CYCLES_NAME: tf.io.FixedLenFeature([], tf.float32),
         cst.CURRENT_CYCLE_NAME: tf.io.FixedLenFeature([], tf.float32),
-        cst.TDLIN_NAME: tf.io.FixedLenFeature([cst.STEPS, cst.INPUT_DIM], tf.float32),
+        #cst.TDLIN_NAME: tf.io.FixedLenFeature([cst.STEPS, cst.INPUT_DIM], tf.float32),
         cst.QDLIN_NAME: tf.io.FixedLenFeature([cst.STEPS, cst.INPUT_DIM], tf.float32)
     }
     examples = tf.io.parse_single_example(example_proto, feature_description)
@@ -145,7 +145,7 @@ def get_flatten_windows(window_size):
         """
         # Select all rows for each feature
         qdlin = features[cst.QDLIN_NAME].batch(window_size)
-        tdlin = features[cst.TDLIN_NAME].batch(window_size)
+        #tdlin = features[cst.TDLIN_NAME].batch(window_size)
         ir = features[cst.INTERNAL_RESISTANCE_NAME].batch(window_size)
         dc_time = features[cst.DISCHARGE_TIME_NAME].batch(window_size)
         qd = features[cst.QD_NAME].batch(window_size)
@@ -153,7 +153,7 @@ def get_flatten_windows(window_size):
         # our final model
         features_flat = {
             cst.QDLIN_NAME: qdlin,
-            cst.TDLIN_NAME: tdlin,
+            #cst.TDLIN_NAME: tdlin,
             cst.INTERNAL_RESISTANCE_NAME: ir,
             cst.DISCHARGE_TIME_NAME: dc_time,
             cst.QD_NAME: qd
@@ -243,8 +243,8 @@ def calculate_and_save_scaling_factors(data_dict, train_test_split, csv_dir):
                                   for cycle_v in cell_v["cycles"].values()])
     
     # Calculating max values for detail features
-    for k in [cst.QDLIN_NAME,
-              cst.TDLIN_NAME]:
+    for k in [cst.QDLIN_NAME]:
+              #,cst.TDLIN_NAME]:
         # Two max() calls are needed, one over every cycle array, one over all cycles (all cells included)
         scaling_factors[k] = max([max(cycle_v[k])
                                   for cell_k, cell_v in data_dict.items()
