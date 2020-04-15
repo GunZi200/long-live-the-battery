@@ -130,7 +130,7 @@ def create_keras_model(window_size, loss, hparams_config=None):
     
     model = Model(inputs=[qdlin_in, ir_in, dt_in, qd_in], outputs=[main_output])
     
-    metrics_list = [mae_current_cycle, mae_remaining_cycles, 'accuracy']
+    metrics_list = [mae_current_cycle, mae_remaining_cycles]
     
     model.compile(loss=loss, optimizer=Adam(lr=hparams[cst.LEARNING_RATE], clipnorm=1.), metrics=metrics_list)
 
