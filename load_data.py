@@ -10,10 +10,10 @@ if not os.path.exists(samples_fullpath):
 	os.makedirs(samples_fullpath)
 	
 dataset = create_dataset(cst.SECONDARY_TEST_SET,
-							window_size=cst.WINDOW_SIZE,
-							shift=cst.SHIFT,
-							stride=cst.STRIDE,
-							batch_size=cst.BATCH_SIZE)
+							window_size=cst.WINDOW_SIZE, #20
+							shift=cst.SHIFT, #20
+							stride=cst.STRIDE, #1
+							batch_size=1)
 rows = dataset.take(cst.NUM_SAMPLES)
 
 
