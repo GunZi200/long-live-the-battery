@@ -39,13 +39,13 @@ def create_keras_model(window_size, loss, hparams_config=None):
         cst.CONV_STRIDE_2D: (1, 3),
         cst.CONV_STRIDE_2D_X: 1,
         cst.CONV_STRIDE_2D_Y: 3,
-        cst.CONV_ACTIVATION: "relu",
+        cst.CONV_ACTIVATION: "swish",
         cst.DENSE_NUM_UNITS: 32,
         cst.DENSE_NUM_UNITS_1: 512,
         cst.DENSE_NUM_UNITS_2: 64,
         cst.DENSE_ACTIVATION: "relu",
-        cst.LEARNING_RATE: 0.0001,
-        cst.DROPOUT_RATE_CNN: 0.3,
+        cst.LEARNING_RATE: 0.00005,
+        cst.DROPOUT_RATE_CNN: 0.4,
         cst.PADDING: 'valid'
     }
     # update hyperparameters with arguments from task_hyperparameter.py

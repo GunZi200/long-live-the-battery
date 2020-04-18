@@ -28,7 +28,7 @@ def get_cycle_example(cell_value, summary_idx, cycle_idx, scaling_factors):
     
     # Detail feature values (arrays)
     qdlin_value = cell_value["cycles"][cycle_idx][cst.QDLIN_NAME] / scaling_factors[cst.QDLIN_NAME]
-    tdlin_value = cell_value["cycles"][cycle_idx][cst.TDLIN_NAME] / scaling_factors[cst.TDLIN_NAME]
+    #tdlin_value = cell_value["cycles"][cycle_idx][cst.TDLIN_NAME] / scaling_factors[cst.TDLIN_NAME]
     
     # Wrapping as example
     cycle_example = Example(
@@ -44,8 +44,8 @@ def get_cycle_example(cell_value, summary_idx, cycle_idx, scaling_factors):
                     Feature(float_list=FloatList(value=dt_value)),
                 cst.QDLIN_NAME:
                     Feature(float_list=FloatList(value=qdlin_value)),
-                cst.TDLIN_NAME:
-                    Feature(float_list=FloatList(value=tdlin_value)),
+                #cst.TDLIN_NAME:
+                    #Feature(float_list=FloatList(value=tdlin_value)),
                 cst.CURRENT_CYCLE_NAME:
                     Feature(float_list=FloatList(value=cc_value))
             }
@@ -57,15 +57,12 @@ def get_cycle_example(cell_value, summary_idx, cycle_idx, scaling_factors):
 def write_to_tfrecords(batteries, data_dir, train_test_split=None):
     """
     Takes battery data in dict format as input and writes a set of tfrecords files to disk.
-
     To load the preprocessed battery data that was used to train the model, use the
     "load_processed_battery_data()" function and pass it as the batteries argument to the
     "Write_to_tfrecords()" function.
-
     A train/test split can be passed as a dictionary with the names of the splits (e.g. "train") as keys
     and lists of cell names (e.g. ["b1c3", "b1c4"]) as values. This will create subdirectories for each
     split.
-
     For more info on TFRecords and Examples see 'Hands-on Machine Learning with
     Scikit-Learn, Keras & TensorFlow', pp.416 (2nd edition, early release)
     """
@@ -111,7 +108,6 @@ def parse_features(example_proto):
     The parse_features function takes an example and converts it from binary/message format
     into a more readable format. To be able to feed the dataset directly into a
     Tensorflow model later on, we split the data into examples and targets (i.e. X and y).
-
     The feature_description defines the schema/specifications to read from TFRecords.
     This could also be done by declaring feature columns and parsing the schema
     with tensorflow.feature_columns.make_parse_example_spec().
@@ -122,7 +118,7 @@ def parse_features(example_proto):
         cst.DISCHARGE_TIME_NAME: tf.io.FixedLenFeature([1, ], tf.float32),
         cst.REMAINING_CYCLES_NAME: tf.io.FixedLenFeature([], tf.float32),
         cst.CURRENT_CYCLE_NAME: tf.io.FixedLenFeature([], tf.float32),
-        cst.TDLIN_NAME: tf.io.FixedLenFeature([cst.STEPS, cst.INPUT_DIM], tf.float32),
+        #cst.TDLIN_NAME: tf.io.FixedLenFeature([cst.STEPS, cst.INPUT_DIM], tf.float32),
         cst.QDLIN_NAME: tf.io.FixedLenFeature([cst.STEPS, cst.INPUT_DIM], tf.float32)
     }
     examples = tf.io.parse_single_example(example_proto, feature_description)
@@ -145,7 +141,7 @@ def get_flatten_windows(window_size):
         """
         # Select all rows for each feature
         qdlin = features[cst.QDLIN_NAME].batch(window_size)
-        tdlin = features[cst.TDLIN_NAME].batch(window_size)
+        #tdlin = features[cst.TDLIN_NAME].batch(window_size)
         ir = features[cst.INTERNAL_RESISTANCE_NAME].batch(window_size)
         dc_time = features[cst.DISCHARGE_TIME_NAME].batch(window_size)
         qd = features[cst.QD_NAME].batch(window_size)
@@ -153,7 +149,7 @@ def get_flatten_windows(window_size):
         # our final model
         features_flat = {
             cst.QDLIN_NAME: qdlin,
-            cst.TDLIN_NAME: tdlin,
+            #cst.TDLIN_NAME: tdlin,
             cst.INTERNAL_RESISTANCE_NAME: ir,
             cst.DISCHARGE_TIME_NAME: dc_time,
             cst.QD_NAME: qd
@@ -190,9 +186,7 @@ def create_dataset(data_dir, window_size, shift, stride, batch_size,
     Creates a dataset from .tfrecord files in the data directory. Expects a regular expression
     to capture multiple files (e.g. "data/tfrecords/train/*tfrecord").
     The dataset will augment the original data by creating windows of loading cycles.
-
     To load unprocessed data, set "preprocessed" to False.
-
     Notes about the interleave() method:
     interleave() will create a dataset that pulls 4 (=cycle_length) file paths from the
     filepath_dataset and for each one calls the function "read_tfrecords()". It will then
@@ -243,8 +237,8 @@ def calculate_and_save_scaling_factors(data_dict, train_test_split, csv_dir):
                                   for cycle_v in cell_v["cycles"].values()])
     
     # Calculating max values for detail features
-    for k in [cst.QDLIN_NAME,
-              cst.TDLIN_NAME]:
+    for k in [cst.QDLIN_NAME]:
+              #,cst.TDLIN_NAME]:
         # Two max() calls are needed, one over every cycle array, one over all cycles (all cells included)
         scaling_factors[k] = max([max(cycle_v[k])
                                   for cell_k, cell_v in data_dict.items()

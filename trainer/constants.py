@@ -46,12 +46,12 @@ DROPOUT_RATE_CNN = 'dropout_cnn'
 DROPOUT_RATE_LSTM = 'dropout_lstm'
 
 # Loading data parameters
-WINDOW_SIZE = 20 #Deafult = 100
+WINDOW_SIZE = 20  #Deafult = 100
 BATCH_SIZE = 16	#Default = 16
-NUM_EPOCHS = 500 #Default = 3
+NUM_EPOCHS = 2000 #Default = 3
 SHIFT = 20 #Default = 20
 STRIDE = 1 #Default = 1
-NUM_SAMPLES = 6 # Default = ??
+NUM_SAMPLES = 1000 # Default = ??
 
 # unique full_cnn_model parameters
 CONV_KERNEL_2D = 'conv_kernel_2d'
