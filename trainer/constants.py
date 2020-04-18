@@ -51,7 +51,7 @@ BATCH_SIZE = 16	#Default = 16
 NUM_EPOCHS = 2000 #Default = 3
 SHIFT = 20 #Default = 20
 STRIDE = 1 #Default = 1
-NUM_SAMPLES = 1000 # Default = ??
+NUM_SAMPLES = 1 # Default = ??
 
 # unique full_cnn_model parameters
 CONV_KERNEL_2D = 'conv_kernel_2d'
