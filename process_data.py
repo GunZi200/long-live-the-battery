@@ -31,6 +31,8 @@ for i in range(num_samples):
 			}
 	targets = np.array(json.loads(target))
 	predictions = model.predict(cycles)
+	#print('targets = {}'.format(np.floor(targets*2159)))
+	#print('predictions = {}'.format(np.floor(predictions*2159)))
 	mae_curr_temp = mae_current_cycle(targets,predictions)
 	mae_remain_temp = mae_remaining_cycles(targets,predictions)
 	mae_curr = mae_curr + mae_curr_temp
