@@ -53,6 +53,7 @@ python -m trainer.data_pipeline
 ```
 to recreate the *.tfrecord* files.
 
+<img src="https://i.imgur.com/pTTFU8d.png" height="500">
 
 ## Train Model
 
