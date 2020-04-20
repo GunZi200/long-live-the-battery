@@ -1,8 +1,16 @@
+
+
 # long-live-the-battery
 
 Predicting total battery cycle life time with [TensorFlow 2](https://www.tensorflow.org/beta). We're going to publish a blog post describing the project in-depth soon.
 
 This project is based on the work done in the paper ['Data driven prediciton of battery cycle life before capacity degradation'](https://www.nature.com/articles/s41560-019-0356-8) by K.A. Severson, P.M. Attia, et al., and uses the corresponding data set. The original instructions for how to load the data can be found [here](https://github.com/rdbraatz/data-driven-prediction-of-battery-cycle-life-before-capacity-degradation).
+
+# Table of Contents
+- [Setup](#setup)
+- [Generate Local Data](#generate-local-data)
+- [Train Model](#train-model)
+- [Predict](#predict)
 
 
 ## Setup
