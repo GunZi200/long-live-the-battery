@@ -54,14 +54,12 @@ STRIDE = 1 #Default = 1
 NUM_SAMPLES = 100 # Default = ??
 
 # unique full_cnn_model parameters
-CONV_KERNEL_2D = 'conv_kernel_2d'
 CONV_KERNEL_2D_X_1 = 'conv_kernel_2d_x_1'
 CONV_KERNEL_2D_Y_1 = 'conv_kernel_2d_y_1'
 CONV_KERNEL_2D_X_2 = 'conv_kernel_2d_x_2'
 CONV_KERNEL_2D_Y_2 = 'conv_kernel_2d_y_2'
 CONV_KERNEL_2D_X_3 = 'conv_kernel_2d_x_3'
 CONV_KERNEL_2D_Y_3 = 'conv_kernel_2d_y_3'
-CONV_STRIDE_2D = 'conv_stride_2d'
 CONV_STRIDE_2D_X = 'conv_stride_2d_x'
 CONV_STRIDE_2D_Y = 'conv_stride_2d_y'
 PADDING = 'conv_padding_2d'

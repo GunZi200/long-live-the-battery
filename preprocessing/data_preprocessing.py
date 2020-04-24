@@ -304,8 +304,7 @@ def preprocess_cycle(cycle,
                      I_thresh=-3.99, 
                      Vdlin_start=3.5, 
                      Vdlin_stop=2.0, 
-                     Vdlin_steps=cst.STEPS,
-                     return_original_data=False):
+                     Vdlin_steps=cst.STEPS):
     """Processes data (Qd, T, V, t) from one cycle and resamples Qd, T and V to a predefinded dimension.
     discharging_time will be computed based on t and is the only returned feature that is a scalar.
     
@@ -385,35 +384,22 @@ def preprocess_cycle(cycle,
     # For resampling the decreasing order is chosen again.
     # The order doesn't matter for evaluating Qd_interp_func.
     Vdlin = np.linspace(Vdlin_start, Vdlin_stop, Vdlin_steps)
-    
     Qdlin = Qd_interp_func(Vdlin)
 
-    if return_original_data:
-        return {
-            cst.QDLIN_NAME: Qdlin,
-            cst.VDLIN_NAME: Vdlin,
-            cst.DISCHARGE_TIME_NAME: discharging_time,
-            # Original data used for interpolation.
-            "Qd_original_data": Qd,
-            "V_original_data": V,
-            "t_original_data": t
-        }
-    else:
-        return {
-            cst.QDLIN_NAME: Qdlin,
-            cst.VDLIN_NAME: Vdlin,
-            cst.DISCHARGE_TIME_NAME: discharging_time
-        }
+    return {
+        cst.QDLIN_NAME: Qdlin,
+        cst.VDLIN_NAME: Vdlin,
+        cst.DISCHARGE_TIME_NAME: discharging_time
+    }
 
 
-def preprocess_batch(batch_dict, return_original_data=False, return_cycle_drop_info=False, verbose=False):
+def preprocess_batch(batch_dict, return_cycle_drop_info=False, verbose=False):
     """Processes all cycles of every cell in batch_dict and returns the results in the same format.
     
     Arguments:
         batch_dict {dict} -- Unprocessed batch of cell data.
     
     Keyword Arguments:
-        return_original_data {bool} -- If True, the original data used for interpolation is returned. (default: {False})
         verbose {bool} -- If True prints progress for every cell (default: {False})
     
     Returns:
@@ -441,6 +427,14 @@ def preprocess_batch(batch_dict, return_original_data=False, return_cycle_drop_i
             },
             cycles=dict()
         )
+
+        # If cycle_life is larger than 1500, skip it.
+        if int(cell_value["cycle_life"][0][0]) > 1500:
+            print("    Cell {} has cycle_life ({}): Skipping the cell..."
+                    .format(cell_key,
+                            cell_value["cycle_life"][0][0]))
+            del batch_results[cell_key] # remove cell.
+            continue
         
         for cycle_key, cycle_value in cell_value["cycles"].items():
             # Has to be skipped since there are often times only two measurements.
@@ -458,7 +452,7 @@ def preprocess_batch(batch_dict, return_original_data=False, return_cycle_drop_i
             
             # Start processing the cycle.
             try:
-                cycle_results = preprocess_cycle(cycle_value, return_original_data=return_original_data)
+                cycle_results = preprocess_cycle(cycle_value)
             
             except DropCycleException as e:
                 print("cell:", cell_key, " cycle:", cycle_key)
@@ -576,7 +570,6 @@ def main():
     batch_dict = load_batches_to_dict()    
 
     results, cycles_drop_info = preprocess_batch(batch_dict,
-                                                 return_original_data=False,
                                                  return_cycle_drop_info=True,
                                                  verbose=True)
     
@@ -589,7 +582,6 @@ def main():
  
 if __name__ == "__main__":
     main()
-
 
 # TODO: Check with new threshold after processing outliers of std >= 12
 # TODO: Notebook update
