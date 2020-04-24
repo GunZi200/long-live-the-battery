@@ -1,4 +1,4 @@
-import pickle
+import joblib
 import warnings
 from pprint import pprint
 
@@ -107,7 +107,7 @@ def compute_outlier_dict(std_multiple_threshold, verbose=False, **kwargs):
     return outlier_dict
 
 
-def drop_cycle_big_t_outliers(std_multiple_threshold, Qd, T, V, t, t_diff_outlier_thresh=100):
+def drop_cycle_big_t_outliers(std_multiple_threshold, Qd, V, t, t_diff_outlier_thresh=100):
     """Checks for big outliers in the np.diff() values of t.
     If any are found the whole cyce is dropped, with one exception:
         There is only one outlier which lays right after the end of discharging.
@@ -130,7 +130,7 @@ def drop_cycle_big_t_outliers(std_multiple_threshold, Qd, T, V, t, t_diff_outlie
         Tuple of numpy.ndarray  -- Returns the original values of Qd, T, V and t if no big t outlier is found, or
             a slice of all arrays if the only outlier lays right after the end of discharging.
     """
-    outlier_dict = compute_outlier_dict(std_multiple_threshold=std_multiple_threshold, Qd=Qd, T=T, V=V, t=t)
+    outlier_dict = compute_outlier_dict(std_multiple_threshold=std_multiple_threshold, Qd=Qd, V=V, t=t)
     if outlier_dict.get("t"):  # If any outliert was found in t
         t_outlier_mask = outlier_dict["t"]["diff_values"] > t_diff_outlier_thresh
     else:
@@ -146,7 +146,7 @@ def drop_cycle_big_t_outliers(std_multiple_threshold, Qd, T, V, t, t_diff_outlie
         #   drop all values after this index and continue with processing.
         if indeces_before_t_outliers.size == 1 and V_before_t_outlier < 2.01:
             i = int(indeces_before_t_outliers) + 1
-            return Qd[:i], T[:i], V[:i], t[:i]
+            return Qd[:i], V[:i], t[:i]
         else:
             raise OutlierException(
                 "    Dropping cycle based on outliers with np.diff(t) > {} with value(s) {}".format(
@@ -154,10 +154,10 @@ def drop_cycle_big_t_outliers(std_multiple_threshold, Qd, T, V, t, t_diff_outlie
                     list(outlier_dict["t"]["diff_values"][t_outlier_mask])),
                 outlier_dict)
     else:
-        return Qd, T, V, t
+        return Qd, V, t
 
 
-def drop_outliers_starting_left(std_multiple_threshold, Qd, T, V, t):
+def drop_outliers_starting_left(std_multiple_threshold, Qd, V, t):
     """Searches for outliers in Qd, T, V and t and drops them one by one starting with the smallest index.
     Outlier indeces are dropped from every array simultaniously, so the sizes still match.
     After the first outliers from every array have been dropped, outliers are computed again, to not drop
@@ -166,18 +166,17 @@ def drop_outliers_starting_left(std_multiple_threshold, Qd, T, V, t):
     Arguments:
         std_multiple_threshold {int} -- Threshold for the compute_outlier_dict function
         Qd {numpy.ndarray} -- Qd measurements
-        T {numpy.ndarray} -- T measurements
         V {numpy.ndarray} -- V measurements
         t {numpy.ndarray} -- t measurements
     
     Returns:
         tuple of numpy.ndarrays -- All arrays without outliers
     """
-    Qd_, T_, V_, t_ = Qd.copy(), T.copy(), V.copy(), t.copy()
+    Qd_, V_, t_ = Qd.copy(), V.copy(), t.copy()
     
     # Initialize and compute outliers
     drop_counter = 0
-    outlier_dict = compute_outlier_dict(std_multiple_threshold, verbose=True, Qd=Qd_, T=T_, V=V_, t=t_)
+    outlier_dict = compute_outlier_dict(std_multiple_threshold, verbose=True, Qd=Qd_, V=V_, t=t_)
     original_outlier_dict = outlier_dict  # copy for debugging und raising OutlierException.
     
     # Process until no outliers are found.
@@ -189,21 +188,20 @@ def drop_outliers_starting_left(std_multiple_threshold, Qd, T, V, t):
         
         # Drop all unique outlier indeces from all arrays.
         Qd_ = array_exclude_index(Qd_, unique_indeces_to_drop)
-        T_ = array_exclude_index(T_, unique_indeces_to_drop)
         V_ = array_exclude_index(V_, unique_indeces_to_drop)
         t_ = array_exclude_index(t_, unique_indeces_to_drop)
         
         drop_counter += len(unique_indeces_to_drop)
         
         # Recompute outlierts after dropping the unique indeces from all arrays.
-        outlier_dict = compute_outlier_dict(std_multiple_threshold, Qd=Qd_, T=T_, V=V_, t=t_)
+        outlier_dict = compute_outlier_dict(std_multiple_threshold, Qd=Qd_, V=V_, t=t_)
     
     if drop_counter > 0:
         print("    Dropped {} outliers in {}".format(drop_counter, list(original_outlier_dict.keys())))
         print("")
     
     check_for_drop_warning(Qd, Qd_)
-    return Qd_, T_, V_, t_
+    return Qd_, V_, t_
 
 
 def array_exclude_index(arr, id):
@@ -328,44 +326,43 @@ def preprocess_cycle(cycle,
     """
 
     Qd = cycle["Qd"]
-    T = cycle["T"]
     V = cycle["V"]
     I = cycle["I"]  # noqa: E741
     t = cycle["t"]
     
     # Only take the measurements during high current discharging.
     discharge_mask = I < I_thresh
-    Qd, T, V, t = multiple_array_indexing(discharge_mask, Qd, T, V, t)
+    Qd, V, t = multiple_array_indexing(discharge_mask, Qd, V, t)
     
     # Sort all values after time.
     sorted_indeces = t.argsort()
-    Qd, T, V, t = multiple_array_indexing(sorted_indeces, Qd, T, V, t)
+    Qd, V, t = multiple_array_indexing(sorted_indeces, Qd, V, t)
     
     # Only take timesteps where time is strictly increasing.
     increasing_time_mask = np.diff(t, prepend=0) > 0
-    Qd, T, V, t = multiple_array_indexing(increasing_time_mask, Qd, T, V, t)
+    Qd, V, t = multiple_array_indexing(increasing_time_mask, Qd, V, t)
 
     # Dropping outliers.
-    Qd, T, V, t = drop_cycle_big_t_outliers(15, Qd, T, V, t)
+    Qd, V, t = drop_cycle_big_t_outliers(15, Qd, V, t)
     
     Qd = handle_small_Qd_outliers(12, Qd, t)
     
-    Qd, T, V, t = drop_outliers_starting_left(12, Qd, T, V, t)
+    Qd, V, t = drop_outliers_starting_left(12, Qd, V, t)
     
     # Apply savitzky golay filter to V to smooth out the values.
     # This is done in order to not drop too many values in the next processing step (make monotonically decreasing).
     # This way the resulting curves don't become skewed too much in the direction of smaller values.
     savgol_window_length = 25
     if savgol_window_length >= V.size:
-        raise DropCycleException("""Dropping cycle with less than {} V values.\nSizes --> Qd:{}, T:{}, V:{}, t:{}"""
-                                 .format(savgol_window_length, Qd.size, T.size, V.size, t.size))
+        raise DropCycleException("""Dropping cycle with less than {} V values.\nSizes --> Qd:{}, V:{}, t:{}"""
+                                 .format(savgol_window_length, Qd.size, V.size, t.size))
     V_savgol = savgol_filter(V, window_length=25, polyorder=2)
 
     # Only take the measurements, where V is monotonically decreasing (needed for interpolation).
     # This is done by comparing V to the accumulated minimum of V.
     #    accumulated minimum --> (taking always the smallest seen value from V from left to right)
     v_decreasing_mask = V_savgol == np.minimum.accumulate(V_savgol)
-    Qd, T, V, t = multiple_array_indexing(v_decreasing_mask, Qd, T, V_savgol, t, drop_warning=True)
+    Qd, V, t = multiple_array_indexing(v_decreasing_mask, Qd, V_savgol, t, drop_warning=True)
     
     # Make V_3 strictly decreasing (needed for interpolation).
     V_strict_dec = make_strictly_decreasing(t, V)
@@ -384,36 +381,26 @@ def preprocess_cycle(cycle,
         bounds_error=False,  # Allows the function to be evaluated outside of the range of V_strict_dec.
         fill_value=(Qd[::-1][0], Qd[::-1][-1])  # Values to use, when evaluated outside of V_strict_dec.
     )
-    T_interp_func = interp1d(
-        V_strict_dec[::-1],
-        T[::-1],
-        bounds_error=False,
-        fill_value=(T[::-1][0], T[::-1][-1])
-    )
 
     # For resampling the decreasing order is chosen again.
     # The order doesn't matter for evaluating Qd_interp_func.
     Vdlin = np.linspace(Vdlin_start, Vdlin_stop, Vdlin_steps)
     
     Qdlin = Qd_interp_func(Vdlin)
-    Tdlin = T_interp_func(Vdlin)
 
     if return_original_data:
         return {
             cst.QDLIN_NAME: Qdlin,
-            cst.TDLIN_NAME: Tdlin,
             cst.VDLIN_NAME: Vdlin,
             cst.DISCHARGE_TIME_NAME: discharging_time,
             # Original data used for interpolation.
             "Qd_original_data": Qd,
-            "T_original_data": T,
             "V_original_data": V,
             "t_original_data": t
         }
     else:
         return {
             cst.QDLIN_NAME: Qdlin,
-            cst.TDLIN_NAME: Tdlin,
             cst.VDLIN_NAME: Vdlin,
             cst.DISCHARGE_TIME_NAME: discharging_time
         }
@@ -561,7 +548,7 @@ def describe_results_dict(results_dict):
     describe_dict.update(dict(summary_results=summary_results))
     
     cycle_results = dict()
-    for k in [cst.QDLIN_NAME, cst.TDLIN_NAME]:
+    for k in [cst.QDLIN_NAME]:
         cycle_results[k] = dict(
             max=np.max([np.max(cycle[k]) for cell in results_dict.values() for cycle in cell["cycles"].values()]),
             min=np.min([np.min(cycle[k]) for cell in results_dict.values() for cycle in cell["cycles"].values()]),
@@ -576,13 +563,13 @@ def describe_results_dict(results_dict):
 def save_preprocessed_data(results_dict, save_dir=cst.PROCESSED_DATA):
     print("Saving preprocessed data to {}".format(save_dir))
     with open(save_dir, 'wb') as f:
-        pickle.dump(results_dict, f)
+        joblib.dump(results_dict, f)
     
 
 def load_preprocessed_data(save_dir=cst.PROCESSED_DATA):
     print("Loading preprocessed data from {}".format(save_dir))
     with open(save_dir, 'rb') as f:
-        return pickle.load(f)
+        return joblib.load(f)
 
 
 def main():

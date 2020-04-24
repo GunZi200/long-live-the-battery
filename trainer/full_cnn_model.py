@@ -28,7 +28,6 @@ def create_keras_model(window_size, loss, hparams_config=None):
     hparams = {
         cst.CONV_FILTERS: 32,
         cst.CONV_KERNEL: 9,
-        cst.CONV_KERNEL_2D: (3, 9),
         cst.CONV_KERNEL_2D_X_1: 1,
         cst.CONV_KERNEL_2D_Y_1: 9,
         cst.CONV_KERNEL_2D_X_2: 1,
@@ -36,7 +35,6 @@ def create_keras_model(window_size, loss, hparams_config=None):
         cst.CONV_KERNEL_2D_X_3: 1,
         cst.CONV_KERNEL_2D_Y_3: 3,
         cst.CONV_STRIDE: 3,
-        cst.CONV_STRIDE_2D: (1, 3),
         cst.CONV_STRIDE_2D_X: 1,
         cst.CONV_STRIDE_2D_Y: 3,
         cst.CONV_ACTIVATION: "swish",
@@ -121,12 +119,6 @@ def create_keras_model(window_size, loss, hparams_config=None):
     get_custom_objects().update({'clippy': Clippy(clipped_relu)})
     
     main_output = Dense(2, name='output', activation='clippy')(dropout_output)
-    #main_output = Dense(2, name='output', activation='clippy')(hidden_dense2)
-    # # Splitting neurons into two parts for the two outputs
-    # split_cc, split_rc = tf.split(hidden_dense2, num_or_size_splits=2, axis=-1)
-    # cc_output = Dense(1, name='cc_output', activation='clippy')(split_cc)
-    # rc_output = Dense(1, name='rc_output', activation='clippy')(split_rc)
-    # main_output = concatenate([cc_output, rc_output], axis=-1, name='main_output')
     
     model = Model(inputs=[qdlin_in, ir_in, dt_in, qd_in], outputs=[main_output])
     
