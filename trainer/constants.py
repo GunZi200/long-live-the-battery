@@ -48,7 +48,7 @@ DROPOUT_RATE_LSTM = 'dropout_lstm'
 # Loading data parameters
 WINDOW_SIZE = 20  #Deafult = 100
 BATCH_SIZE = 16	#Default = 16
-NUM_EPOCHS = 2000 #Default = 3
+NUM_EPOCHS = 3 #Default = 3
 SHIFT = 20 #Default = 20
 STRIDE = 1 #Default = 1
 NUM_SAMPLES = 100 # Default = ??
